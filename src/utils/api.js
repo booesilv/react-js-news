@@ -5,11 +5,12 @@ import * as request from 'request-promise'
 
 /* NEWS: https://newsapi.org/ */
 
-export const NEWS_API_KEY = 'YOUR_KEY_HERE'
+export const NEWS_API_KEY = 'b1d5327138604948b97ba290d0cfa5fd'
 
 export const ENDPOINTS = {
 
-    NEWS_API_URL: 'https://newsapi.org/v1/articles'
+    NEWS_API_URL: 'https://newsapi.org/v1/articles',
+    SOURCE_API_URL: 'https://newsapi.org/v1/sources'
 
 }
 
@@ -24,5 +25,5 @@ export function get( url, queryParameters ) {
         json: true,
         uri: url,
         qs: queryParameters
-    } )
+    })
 }

@@ -1,8 +1,12 @@
 
 
 .news-data {
-    padding-right: 60px;
+    padding-right: 200px;
     font-size: 125%;
+}
+
+.card-title{
+    font-size: xx-large;
 }
 
 .news-data i {
@@ -16,7 +20,7 @@
 }
 
 .news-img-container {
-    max-width: 200px !important;
+    max-width: 300px !important;
     overflow: hidden;
 }
 
@@ -25,6 +29,7 @@
 }
 
 .news-img {
-    max-height: 240px;
+    max-height: 300px;
     max-width: initial !important;
 }
+

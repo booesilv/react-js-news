@@ -8,12 +8,12 @@ import defaultPicture from './components/img/default.jpg'
 
 const Materialize = window.Materialize
 
-const APP_TITLE = 'Awesome App'
+const APP_TITLE = 'Find your Intel'
 //update document title (displayed in the opened browser tab)
 document.title = APP_TITLE
 
 //web api utils
-import { get, ENDPOINTS, NEWS_API_KEY } from './utils/api'
+import { get, ENDPOINTS, NEWS_API_KEY, SOURCE_API_URL } from './utils/api'
 
 //components
 import NewsCard from './components/NewsCard'
@@ -26,7 +26,13 @@ class App extends Component {
         super( props )
         this.state = {
             news: undefined,
+            source: '',
+            sources: []
         }
+    }
+
+    componentWillMount() {
+        this.fetchSources()
     }
 
 
@@ -37,12 +43,13 @@ class App extends Component {
                     <h1>{ APP_TITLE }</h1>
                     <img src={ logo } className="App-logo" alt="logo" />
                 </div>
-
+                <label>Please select a source</label>
+                <select className="browser-default" value={ this.state.source } onChange={ this.handleChange }>
+                    { this.state.sources.map( source => <option value={ source.id }> { source.name }  </option> ) }
+                </select>
                 <div className="App-content">
                     <div className="center-align">
-
                         <form onSubmit={ this.fetchNews }>
-
                             <button type="submit" className="waves-effect waves-light btn">
                                 Get some news!
                             </button>
@@ -52,14 +59,26 @@ class App extends Component {
                     </div>
 
                     <div className="row" style={ { marginTop: 20 } } >
-                        <div className="col s12 m6 offset-m3">
+                        <div className="col s0 m0 offset">
                             { this.displayNews() }
                         </div>
                     </div>
                 </div>
-
+                <footer>
+                    <div className="footer-copyright">
+                        <div className="container">
+                            © 2017 Copyright LatrousAlexandre&SimonManiel
+                        </div>
+                    </div>
+                </footer>
             </div>
         )
+    }
+
+    handleChange = ( e ) => {
+        this.setState( {
+            source: e.target.value
+        })
     }
 
 
@@ -75,12 +94,12 @@ class App extends Component {
             let _news = await get( ENDPOINTS.NEWS_API_URL, {
                 //YOU NEED TO PROVIDE YOUR "APIXU" API KEY HERE, see /utils/api.js file to grab the DOCUMENTATION file
                 apiKey: NEWS_API_KEY,
-                source: 'techcrunch'
-            } )
+                source: this.state.source
+            })
 
             this.setState( {
                 news: _news
-            } )
+            })
 
         }
         catch ( error ) {
@@ -91,13 +110,35 @@ class App extends Component {
     }
 
 
+    fetchSources = async () => {
+
+
+
+        try {
+            let _sources = await get( ENDPOINTS.SOURCE_API_URL, {
+                //YOU NEED TO PROVIDE YOUR "APIXU" API KEY HERE, see /utils/api.js file to grab the DOCUMENTATION file
+                apiKey: NEWS_API_KEY,
+
+            })
+
+            this.setState( {
+                sources: _sources.sources
+
+            })
+
+        }
+        catch ( error ) {
+            Materialize.toast( error, 8000, 'error-toast' )
+            console.log( 'Failed fetching data: ', error )
+        }
+
+    }
     //handle display of the received news object
     displayNews = () => {
         const news = this.state.news
 
-
         /*data looks like that
-
+    
             {
                 "status": "ok",
                 "source": "",
@@ -136,17 +177,14 @@ class App extends Component {
 
             console.log( news )
 
-            const _title = news.articles[ 0 ].title
-
-            return (
-                <NewsCard picture={ defaultPicture } text={ 'hey' } title={ _title }
-                />
+            return news.articles.map(
+                article => <NewsCard picture={ article.urlToImage } text={ article.description } title={ article.title } publicationDate={ article.publishedAt } url={ article.url } />
             )
         }
-
         return null
     }
-
 }
 
 export default App
+
+
